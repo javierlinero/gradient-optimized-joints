@@ -4,7 +4,7 @@ import meshio
 import pygmsh
 import tempfile
 import dolfin_adjoint
-from connector.visualization import dolfin_plot
+from visualization import dolfin_plot
 
 
 def on_contact(x, opt):

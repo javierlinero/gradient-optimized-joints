@@ -6,7 +6,7 @@ import pygmsh
 import tempfile
 import matplotlib.pyplot as plt
 import dolfin_adjoint
-from connector.visualization import dolfin_plot
+from visualization import dolfin_plot
 
 
 def plot_line_segments(point_lists):

@@ -4,11 +4,11 @@ import numpy as np
 import dolfin
 import dolfin_adjoint
 import pyadjoint.overloaded_function
-from connector.sdf import backend_signed_distance_function, SignedDistanceFunctionBlock
-from connector.mesh import get_mesh_mapping
-from connector.shapes import get_shape, on_contact
-from connector.line_fitting import backend_line_fitting, LineFittingBlock
-from connector.visualization import plot_mesh
+from sdf import backend_signed_distance_function, SignedDistanceFunctionBlock
+from mesh import get_mesh_mapping
+from shapes import get_shape, on_contact
+from line_fitting import backend_line_fitting, LineFittingBlock
+from visualization import plot_mesh
 from elasticity.stress_lic import draw_lic
 
 

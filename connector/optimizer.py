@@ -6,11 +6,11 @@ import dolfin
 import functools
 import matplotlib.pyplot as plt
 import dolfin_adjoint
-from connector.fem import FEM
-from connector.args import parse_args
-from connector.mesh import get_mesh
-from connector.shapes import get_shape
-from connector.visualization import dolfin_plot, plot_joint, plot_grad
+from fem import FEM
+from args import parse_args
+from mesh import get_mesh
+from shapes import get_shape
+from visualization import dolfin_plot, plot_joint, plot_grad
 
 
 def on_edge(x0, y0, x1, y1, x2, y2, eps, incl_endpts):
