@@ -2,7 +2,7 @@ import ufl.algebra
 from tqdm import tqdm
 import numpy as np
 import dolfin
-import fenics_adjoint
+import dolfin_adjoint
 import pyadjoint.overloaded_function
 from connector.sdf import backend_signed_distance_function, SignedDistanceFunctionBlock
 from connector.mesh import get_mesh_mapping
@@ -39,11 +39,11 @@ class FEM:
         self.ds = self.shape.ds
         self.mu = opt.young_modulus / (2. * (1. + opt.poisson_ratio))
         self.lmbda = opt.young_modulus * opt.poisson_ratio / ((1. + opt.poisson_ratio) * (1. - opt.poisson_ratio))
-        self.traction = fenics_adjoint.Constant((opt.traction, 0.))
-        self.pen_w = fenics_adjoint.Constant(opt.pen_w)
+        self.traction = dolfin_adjoint.Constant((opt.traction, 0.))
+        self.pen_w = dolfin_adjoint.Constant(opt.pen_w)
         self.vfs = dolfin.VectorFunctionSpace(self.mesh, "CG", 1)
         self.tfs = dolfin.TensorFunctionSpace(self.mesh, "DG", 0)
-        self.mesh_offset = fenics_adjoint.Function(self.vfs)
+        self.mesh_offset = dolfin_adjoint.Function(self.vfs)
         self.dof_2_vertex = get_mesh_mapping(mesh=self.mesh, function_space=self.vfs, direction='dof_2_vertex')
         if opt.enable_offset == side:
             def close_to(vtx):
@@ -51,22 +51,22 @@ class FEM:
             function_assign(mesh=self.mesh, function=self.mesh_offset, dof_2_vertex=self.dof_2_vertex,
                             cond=close_to, value=opt.offset)
         if opt.ctrl_var == 'mesh_offset':
-            self.adjoint_ctrl = fenics_adjoint.Control(self.mesh_offset)
+            self.adjoint_ctrl = dolfin_adjoint.Control(self.mesh_offset)
         dolfin.ALE.move(self.mesh, self.mesh_offset)
 
         self.du = dolfin.TrialFunction(self.vfs)  # Incremental displacement
         self.v = dolfin.TestFunction(self.vfs)  # Test function
-        self.u = fenics_adjoint.Function(self.vfs)  # Displacement from previous iteration
+        self.u = dolfin_adjoint.Function(self.vfs)  # Displacement from previous iteration
         self.bcs = \
-            [fenics_adjoint.DirichletBC(self.vfs.sub(1), fenics_adjoint.Constant(0.),
+            [dolfin_adjoint.DirichletBC(self.vfs.sub(1), dolfin_adjoint.Constant(0.),
                                         'near(x[1], {}) && on_boundary'.format(self.shape.h / 2.), 'topological')]
         grad_u = dolfin.grad(self.u)
         strain = 0.5 * (grad_u + grad_u.T)
         self.e = self.lmbda / 2 * dolfin.tr(strain) ** 2 + self.mu * dolfin.inner(strain, strain)
         self.idt = dolfin.SpatialCoordinate(self.mesh)
         if opt.ctrl_var == 'spatial_coordinate':
-            self.idt = fenics_adjoint.project(self.idt, self.vfs)
-            self.adjoint_ctrl = fenics_adjoint.Control(self.idt)
+            self.idt = dolfin_adjoint.project(self.idt, self.vfs)
+            self.adjoint_ctrl = dolfin_adjoint.Control(self.idt)
         self.idx_lists = [[] for _ in range(len(self.shape.contact_ids))]
         for idx, vtx in enumerate(self.mesh.coordinates()):
             for contact_count, contact_id in enumerate(self.shape.contact_ids):
@@ -95,7 +95,7 @@ class FEM:
         epsilon = dolfin.variable(strain)
         energy = self.lmbda / 2. * dolfin.tr(epsilon) ** 2 + self.mu * dolfin.inner(epsilon, epsilon)
         sigma = dolfin.diff(energy, epsilon)
-        sigma = fenics_adjoint.project(sigma, self.tfs)
+        sigma = dolfin_adjoint.project(sigma, self.tfs)
 
         coordinates = np.array(self.shape.mesh.coordinates())
         x_min, x_max = np.min(coordinates[:, 0]), np.max(coordinates[:, 0])
@@ -131,7 +131,7 @@ class FEM:
         if opt.penalization_type == 'line_fitting':
             # proj_u_list = []
             for contact_count, contact_id in enumerate(self.shape.contact_ids):
-                line = self.line_fitting(fenics_adjoint.project(other.u + other.idt, other.vfs),
+                line = self.line_fitting(dolfin_adjoint.project(other.u + other.idt, other.vfs),
                                          other.idx_lists[contact_count])
                 f = self.idt[1] - self.idt[0] * line[1] - line[0]
                 proj_u = (self.u[1] - self.u[0] * line[1] + f) / ((1. + line[1] ** 2) ** 0.5)
@@ -145,10 +145,10 @@ class FEM:
             u_vec[self.idx_lists[0], 0] = .1
             self.u.vector()[:] = u_vec.flatten()
 
-            func = fenics_adjoint.project(self.idt + self.u, self.vfs)
+            func = dolfin_adjoint.project(self.idt + self.u, self.vfs)
             sdf = self.sdf(func=func, idx_list=self.consol_idx_list, mesh=self.mesh, other_mesh=other.mesh)
 
-            tmp_func = fenics_adjoint.Function(self.vfs)
+            tmp_func = dolfin_adjoint.Function(self.vfs)
             result_vec = np.reshape(sdf.vector()[:], (-1, 4))[:, 2:]
             tmp_func.vector()[:] = result_vec.flatten()
             import matplotlib.pyplot as plt
@@ -174,12 +174,12 @@ class FEM:
         dE = dolfin.derivative(E, self.u, self.v)
         jacE = dolfin.derivative(dE, self.u, self.du)
 
-        problem = fenics_adjoint.NonlinearVariationalProblem(dE, self.u, self.bcs, jacE)
-        solver = fenics_adjoint.NonlinearVariationalSolver(problem)
+        problem = dolfin_adjoint.NonlinearVariationalProblem(dE, self.u, self.bcs, jacE)
+        solver = dolfin_adjoint.NonlinearVariationalSolver(problem)
         solver.solve()
         # for idx, proj_u in enumerate(proj_u_list):
-        #     print('e', float(fenics_adjoint.assemble(E)))
-        #     print('assembled', float(fenics_adjoint.assemble(self.pen_w * soft_relu(proj_u, opt) * self.ds(idx + 2))))
+        #     print('e', float(dolfin_adjoint.assemble(E)))
+        #     print('assembled', float(dolfin_adjoint.assemble(self.pen_w * soft_relu(proj_u, opt) * self.ds(idx + 2))))
         if vis_stress:
             self.vis_stress()
         if vis_mesh:
@@ -191,4 +191,4 @@ class FEM:
             file << self.u
 
         if need_disp:
-            return fenics_adjoint.assemble(self.u[0] * self.ds(1)) / (self.shape.h / 2.)
+            return dolfin_adjoint.assemble(self.u[0] * self.ds(1)) / (self.shape.h / 2.)
