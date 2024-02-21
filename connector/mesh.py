@@ -77,7 +77,7 @@ def get_mesh(side, opt, vis=False):
 
 
 if __name__ == '__main__':
-    from connector.args import parse_args
+    from args import parse_args
     opt = parse_args()
     get_mesh(side='left', opt=opt, vis=True)
     get_mesh(side='right', opt=opt, vis=True)

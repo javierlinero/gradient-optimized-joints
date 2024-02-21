@@ -78,8 +78,8 @@ def plot_joint(left, right, x_offset=7.):
 
 
 if __name__ == '__main__':
-    from connector.args import parse_args
-    from connector.shapes import get_shape
+    from args import parse_args
+    from shapes import get_shape
     opt = parse_args()
     x0 = np.array(opt.init_shape_params)
     left_shape = get_shape(side='left', shape_params=x0, opt=opt)

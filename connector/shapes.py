@@ -188,7 +188,7 @@ def get_shape(side, shape_params, opt):
 
 
 if __name__ == '__main__':
-    from connector.args import parse_args
+    from args import parse_args
     opt = parse_args()
     opt.shape_name = 'double_joint'
     opt.init_shape_params = [10., 14., 4., 6., 10., 12.]

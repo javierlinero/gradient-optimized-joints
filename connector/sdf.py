@@ -206,9 +206,9 @@ class SignedDistanceFunctionBlock(pyadjoint.Block):
 
 if __name__ == '__main__':
     sdf = pyadjoint.overloaded_function.overload_function(backend_signed_distance_function, SignedDistanceFunctionBlock)
-    from connector.args import parse_args
-    from connector.shapes import get_shape
-    from connector.fem import FEM
+    from args import parse_args
+    from shapes import get_shape
+    from fem import FEM
     opt = parse_args()
     left = FEM(side='left', shape_params=opt.init_shape_params, opt=opt)
     right = FEM(side='right', shape_params=opt.init_shape_params, opt=opt)
