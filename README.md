@@ -17,7 +17,7 @@ sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ lunar main restri
 After rebooting make sure to check the OS version with
 ```
 lsb_release -a
-``
+```
 
 Finally run the following to get fenics
 ```
