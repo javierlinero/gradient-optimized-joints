@@ -28,9 +28,15 @@ sudo apt-get install --no-install-recommends fenics
 ## Modules (thru python env)
 A requirements.txt will be provided later on, but for now:
 ```
+sudo apt install python3-gmsh
+pip install pygmsh
 pip install git+https://github.com/dolfin-adjoint/pyadjoint.git
 pip install dolfin-adjoint
 pip install tqdm
 pip install numpy
+pip install torch
 ```
+
+## Argsparser
+Allows for selection of file types, look thru mesh.py it sets up for single, double, complex dovetails w/ presets & displays using visualization.py (matplot).
 
