@@ -138,6 +138,9 @@ class FEM:
                 on_right = 1. if self.side == 'right' else -1.
                 x1_l_x2 = 1. if other.shape.point_list[contact_id][0] < other.shape.point_list[contact_id + 1][0] else -1.
                 multiplier = on_right * x1_l_x2
+                print(multiplier)
+                print(type(multiplier))
+                print(opt.soft_relu_scale)
                 E = E + self.pen_w * squared_soft_relu(multiplier * proj_u, opt) * self.ds(contact_count + 2)
                 # proj_u_list.append(multiplier * proj_u)
         elif opt.penalization_type == 'sdf':

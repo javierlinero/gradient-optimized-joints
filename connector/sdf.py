@@ -228,10 +228,15 @@ if __name__ == '__main__':
     result_vec = np.reshape(ans_func.vector()[:], (-1, 4))[:, :2]
     print(result_vec)
     func.vector()[:] = result_vec.flatten()
+
+    print("Answer vec:")
+    ans_vec = ans_func.vector()[:][index_list]
+    print(ans_vec)
+    print(np.min(ans_vec), np.max(ans_vec))
     plt.figure(dpi=300)
     plt.colorbar(dolfin.plot(func, scale=500.))
-    # dolfin.plot(right_mesh)
+    dolfin.plot(right_mesh)
     plt.show()
-    # ans_vec = ans_func.vector()[:][index_list]
-    # print(ans_vec)
-    # print(np.min(ans_vec), np.max(ans_vec))
+    #ans_vec = ans_func.vector()[:][index_list]
+    #print(ans_vec)
+    #print(np.min(ans_vec), np.max(ans_vec))
