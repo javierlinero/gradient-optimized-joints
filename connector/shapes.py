@@ -179,7 +179,7 @@ class GooseNeckJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
         self.h = 25.
-        self.contact_ids = [1]
+        self.contact_ids = [1] # update contact ids later
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
     
@@ -190,10 +190,35 @@ class GooseNeckJoint(BaseShape):
             [two_d_tensor(self.w / 2., 0.),
              two_d_tensor(self.w / 2., shape_params_tensor[0]),
              two_d_tensor(self.w / 2. + shape_params_tensor[1], shape_params_tensor[0]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[1] + shape_params_tensor[2], shape_params_tensor[3]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[1] + shape_params_tensor[2] + shape_params_tensor[4], shape_params_tensor[5]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[1] + shape_params_tensor[2] + shape_params_tensor[4], self.h / 2)
+             two_d_tensor(self.w / 2. + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w / 2. + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w / 2. + shape_params_tensor[4], self.h / 2)
              ]
+        x = 0. if self.side == 'left' else self.w 
+        point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
+        point_list_tensor = torch.cat(point_list, dim=0)
+        return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
+
+class ScarfJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 40.
+        self.h = 50.
+        self.contact_ids = [1]
+        self.traction_len = self.h
+        super().__init__(side, shape_params, opt)
+
+    def get_point_list(self):
+        assert len(self.shape_params) == 6
+        shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
+        point_list = \
+            [two_d_tensor(self.w / 8., 0.),
+             two_d_tensor(self.w / 8. + shape_params_tensor[0], shape_params_tensor[1]),
+             two_d_tensor(self.w / 8. + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w / 8. + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w / 8. + shape_params_tensor[4] + shape_params_tensor[2] - shape_params_tensor[0], shape_params_tensor[5] + shape_params_tensor[3] - shape_params_tensor[1]),
+             two_d_tensor(self.w - self.w / 8., self.h / 2)
+             ]
+
         x = 0. if self.side == 'left' else self.w 
         point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
         point_list_tensor = torch.cat(point_list, dim=0)
@@ -209,6 +234,8 @@ def get_shape(side, shape_params, opt):
         shape_class = DoubleJoint
     elif opt.shape_name == 'gooseneck_joint':
         shape_class = GooseNeckJoint
+    elif opt.shape_name == 'scarf_joint':
+        shape_class = ScarfJoint
     else:
         raise Exception
     return shape_class(side=side, shape_params=shape_params, opt=opt)
@@ -217,9 +244,12 @@ def get_shape(side, shape_params, opt):
 if __name__ == '__main__':
     from args import parse_args
     opt = parse_args()
-    # comment these out to test simple_joint w/ 3 init params
-    opt.shape_name = 'gooseneck_joint'
-    opt.init_shape_params = [6.25, 5., 1.5, 3.5, 7.5, 7.5]
+    # if none defined simple joint
+    # opt.shape_name = 'gooseneck_joint'
+    # opt.init_shape_params = [6.25, 5., 6.5, 3.5, 14, 7.5]
+    opt.shape_name = 'scarf_joint'
+    opt.init_shape_params = [1.5, 5., 14.5, 13.5, 15.5, 11.5]
+
     #opt.shape_name = 'double_joint'
     # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
