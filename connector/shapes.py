@@ -174,6 +174,16 @@ class DoubleJoint(BaseShape):
         point_list_tensor = torch.cat(point_list, dim=0)
         return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
 
+# adding new joints here
+class GooseNeckJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 60.
+        self.h = 40.
+        super().__init__(side, shape_params, opt)
+    
+    def get_point_list(self):
+        assert(self.shape_params == 3)
+
 
 def get_shape(side, shape_params, opt):
     if opt.shape_name == 'simple_joint':
@@ -190,8 +200,9 @@ def get_shape(side, shape_params, opt):
 if __name__ == '__main__':
     from args import parse_args
     opt = parse_args()
-    opt.shape_name = 'double_joint'
-    opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
+    # comment these out to test simple_joint w/ 3 init params
+    #opt.shape_name = 'double_joint'
+    #opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
     dolfin_plot(l.mesh)
