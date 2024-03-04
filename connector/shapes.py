@@ -224,6 +224,85 @@ class ScarfJoint(BaseShape):
         point_list_tensor = torch.cat(point_list, dim=0)
         return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
 
+class LapJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 40.
+        self.h = 50.
+        self.contact_ids = [1]
+        self.traction_len = self.h
+        super().__init__(side, shape_params, opt)
+
+    def get_point_list(self):
+        assert len(self.shape_params) == 5
+        shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
+        point_list = \
+            [two_d_tensor(self.w / 4., 0.),
+             two_d_tensor(self.w / 4., shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[2]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[4]),
+             two_d_tensor(self.w  - self.w / 4., self.h/2)
+             ]
+
+        x = 0. if self.side == 'left' else self.w 
+        point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
+        point_list_tensor = torch.cat(point_list, dim=0)
+        return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
+
+class DoveScarfJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 40.
+        self.h = 50.
+        self.contact_ids = [1]
+        self.traction_len = self.h
+        super().__init__(side, shape_params, opt)
+    
+    def get_point_list(self):
+        shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
+        point_list = \
+            [two_d_tensor(self.w / 8. + shape_params_tensor[0], 0.),
+             two_d_tensor(self.w / 8. + shape_params_tensor[0], shape_params_tensor[1]),
+             two_d_tensor(self.w / 8., shape_params_tensor[2]),
+             two_d_tensor(self.w / 8., shape_params_tensor[3]),
+             two_d_tensor(self.w / 8. + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w / 8 + shape_params_tensor[6], shape_params_tensor[7]),
+             two_d_tensor(self.w - self.w / 8., self.h / 2. - shape_params_tensor[3]),
+             two_d_tensor(self.w - self.w / 8., self.h / 2. - shape_params_tensor[2]),
+             two_d_tensor(self.w - self.w / 8. - shape_params_tensor[0], self.h / 2. - shape_params_tensor[1]),
+             two_d_tensor(self.w - self.w / 8. - shape_params_tensor[0], self.h / 2.)
+             ]
+
+        x = 0. if self.side == 'left' else self.w 
+        point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
+        point_list_tensor = torch.cat(point_list, dim=0)
+        return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
+
+class RabbetJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 40.
+        self.h = 50.
+        self.contact_ids = [1]
+        self.traction_len = self.h
+        super().__init__(side, shape_params, opt)
+
+    def get_point_list(self):
+        shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
+        point_list = \
+            [two_d_tensor(self.w / 4., 0.),
+             two_d_tensor(self.w / 4., shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[2]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[4]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[5], shape_params_tensor[6]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[5], self.h / 2.)
+             ]
+
+        x = 0. if self.side == 'left' else self.w 
+        point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
+        point_list_tensor = torch.cat(point_list, dim=0)
+        return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
+
 
 def get_shape(side, shape_params, opt):
     if opt.shape_name == 'simple_joint':
@@ -236,6 +315,12 @@ def get_shape(side, shape_params, opt):
         shape_class = GooseNeckJoint
     elif opt.shape_name == 'scarf_joint':
         shape_class = ScarfJoint
+    elif opt.shape_name == 'lap_joint':
+        shape_class = LapJoint
+    elif opt.shape_name == 'dovetail_scarf_joint':
+        shape_class = DoveScarfJoint
+    elif opt.shape_name == 'rabbet_joint':
+        shape_class = RabbetJoint
     else:
         raise Exception
     return shape_class(side=side, shape_params=shape_params, opt=opt)
@@ -245,13 +330,23 @@ if __name__ == '__main__':
     from args import parse_args
     opt = parse_args()
     # if none defined simple joint
-    # opt.shape_name = 'gooseneck_joint'
-    # opt.init_shape_params = [6.25, 5., 6.5, 3.5, 14, 7.5]
-    opt.shape_name = 'scarf_joint'
-    opt.init_shape_params = [1.5, 5., 14.5, 13.5, 15.5, 11.5]
+    #opt.shape_name = 'gooseneck_joint'
+    #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 14, 7.5]
+
+    #opt.shape_name = 'scarf_joint'
+    #opt.init_shape_params = [1.5, 5., 14.5, 13.5, 15.5, 11.5]
+
+    #opt.shape_name = 'lap_joint'
+    #opt.init_shape_params = [15., 5., 10., 20., 10.]
+
+    #opt.shape_name = 'dovetail_scarf_joint'
+    #opt.init_shape_params = [2.5, 7.5, 5., 15., 14.5, 12.5, 12.5, 17.5]
 
     #opt.shape_name = 'double_joint'
     # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
+
+    opt.shape_name = 'rabbet_joint'
+    opt.init_shape_params = [20., 10., 10., 15., 10., 25., 20.]
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
     dolfin_plot(l.mesh)
