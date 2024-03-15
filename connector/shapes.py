@@ -303,6 +303,39 @@ class RabbetJoint(BaseShape):
         point_list_tensor = torch.cat(point_list, dim=0)
         return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
 
+class TestJoint(BaseShape):
+    def __init__(self, side, shape_params, opt):
+        self.w = 60.
+        self.h = 70.
+        self.contact_ids = [1]
+        self.traction_len = self.h
+        super().__init__(side, shape_params, opt)
+
+    def get_point_list(self):
+        shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
+        point_list = \
+            [two_d_tensor(shape_params_tensor[0], 0.),
+             two_d_tensor(shape_params_tensor[0], 5.),
+             two_d_tensor(15., 10.),
+             two_d_tensor(15., 15.),
+             two_d_tensor(10., 15.),
+             two_d_tensor(10., 20.),
+             two_d_tensor(15., 20.),
+             two_d_tensor(15., 25.),
+             two_d_tensor(20., 30.),
+             two_d_tensor(25., 30.),
+             two_d_tensor(25., 15.),
+             two_d_tensor(30., 25.),
+             two_d_tensor(30., 30.),
+             two_d_tensor(45., 30.),
+             two_d_tensor(45., 35.)
+             ]
+
+        x = 0. if self.side == 'left' else self.w 
+        point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
+        point_list_tensor = torch.cat(point_list, dim=0)
+        return point_list_tensor.cpu().detach().numpy(), shape_params_tensor, point_list_tensor
+
 
 def get_shape(side, shape_params, opt):
     if opt.shape_name == 'simple_joint':
@@ -321,6 +354,8 @@ def get_shape(side, shape_params, opt):
         shape_class = DoveScarfJoint
     elif opt.shape_name == 'rabbet_joint':
         shape_class = RabbetJoint
+    elif opt.shape_name == 'test_joint':
+        shape_class = TestJoint
     else:
         raise Exception
     return shape_class(side=side, shape_params=shape_params, opt=opt)
@@ -345,8 +380,12 @@ if __name__ == '__main__':
     #opt.shape_name = 'double_joint'
     # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
 
-    opt.shape_name = 'rabbet_joint'
-    opt.init_shape_params = [20., 10., 10., 15., 10., 25., 20.]
+    #opt.shape_name = 'rabbet_joint'
+    #opt.init_shape_params = [20., 10., 10., 15., 10., 25., 20.]
+
+    opt.shape_name = 'test_joint'
+    opt.init_shape_params = [10.]
+
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
     dolfin_plot(l.mesh)

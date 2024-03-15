@@ -1,4 +1,4 @@
-import ufl.algebra
+import ufl_legacy as ufl
 from tqdm import tqdm
 import numpy as np
 import dolfin
@@ -26,6 +26,7 @@ def function_assign(mesh, function, dof_2_vertex, cond, value):
 
 
 def squared_soft_relu(x, opt):
+    print(type(x))
     value = ufl.ln(1. + ufl.exp(opt.soft_relu_scale * x)) / opt.soft_relu_scale
     return value * value
 
