@@ -45,12 +45,12 @@ Allows for the initial parameters of a mesh that needs to be optimized, where sh
 ## Setting up X11 Server for WSL2 Users
 You can utilize any type of X server, but for the sake of making this simple the prereqs is installing ubuntu on wsl2 on a windows 11 computer. When launching VcXsrv (XLaunch) use the following settings:
 
- Markup : 1. Multiple Windows 
-              1. (Display number=-1)
-          2. Start No client
-          3. Clipboard
-              1. Primary Selection
-          4. Disable access control
+1. Multiple Windows 
+    1. (Display number=-1)
+2. Start No client
+3. Clipboard
+    1. Primary Selection
+4. Disable access control
 
 Install the following python package
 ```
