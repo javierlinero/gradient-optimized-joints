@@ -19,17 +19,17 @@ After installing the updated version, make sure to kill your terminal, restart W
 lsb_release -a
 ```
 
-Run the following to get fenics-legacy:
+Run the following to get fenics-legacy & gmsh:
 ```
 sudo apt update && sudo apt dist-upgrade
 sudo apt-get install --no-install-recommends fenics
+sudo apt install python3-gmsh
 ```
 
 ## Modules (thru python env)
 I have provided a requirements.txt file make sure to install all the proper packages, but if you'd like to do this manually use the following:
 
 ```
-sudo apt install python3-gmsh
 pip install pygmsh
 pip install meshio
 pip install git+https://github.com/dolfin-adjoint/pyadjoint.git
