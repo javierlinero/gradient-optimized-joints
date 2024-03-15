@@ -27,7 +27,7 @@ sudo apt install python3-gmsh
 ```
 
 ## Modules (thru python env)
-I have provided a requirements.txt file make sure to install all the proper packages, but if you'd like to do this manually use the following:
+I have provided a requirements.txt file make sure to install all the proper packages, but if you'd like to do this manually use the following (v23.10 Ubuntu requires --break-system-packages or you must setup an env):
 
 ```
 pip install pygmsh
