@@ -368,8 +368,8 @@ if __name__ == '__main__':
     #opt.shape_name = 'gooseneck_joint'
     #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 16, 7.5]
     
-    #opt.shape_name = 'scarf_joint'
-    #opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
+    opt.shape_name = 'scarf_joint'
+    opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
 
     #opt.shape_name = 'lap_joint'
     #opt.init_shape_params = [15., 5., 5., 10., 20., 10.]
@@ -380,8 +380,8 @@ if __name__ == '__main__':
     #opt.shape_name = 'double_joint'
     # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
 
-    opt.shape_name = 'rabbet_joint'
-    opt.init_shape_params = [20., 10., 10., 10., 15., 10., 25., 20.]
+    #opt.shape_name = 'rabbet_joint'
+    #opt.init_shape_params = [20., 10., 10., 10., 15., 10., 25., 20.]
 
     #opt.shape_name = 'test_joint'
     #opt.init_shape_params = [10.]
