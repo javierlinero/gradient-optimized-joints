@@ -75,6 +75,16 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
         width = left.shape.h - left.shape.shape_params_tensor[1] * 2.
     elif opt.shape_name == 'double_joint':
         width = (left.shape.shape_params_tensor[1] - left.shape.shape_params_tensor[0]) * 2.
+    elif opt.shape_name == 'gooseneck_joint': # must fill in these after
+        width = left.shape.h
+    elif opt.shape_name == 'scarf_joint':
+        width = left.shape.h
+    elif opt.shape_name == 'lap_joint':
+        width = left.shape.h 
+    elif opt.shape_name == 'dovetail_scarf_joint':
+        width = left.shape.h 
+    elif opt.shape_name == 'rabbet_joint':
+        width = left.shape.h 
     else:
         raise Exception
     regularizer = regularizer + torch.clamp(opt.reg_soft_min_width - width, min=0.) ** 2

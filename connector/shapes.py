@@ -383,8 +383,8 @@ if __name__ == '__main__':
     #opt.shape_name = 'rabbet_joint'
     #opt.init_shape_params = [20., 10., 10., 15., 10., 25., 20.]
 
-    opt.shape_name = 'test_joint'
-    opt.init_shape_params = [10.]
+    #opt.shape_name = 'test_joint'
+    #opt.init_shape_params = [10.]
 
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
