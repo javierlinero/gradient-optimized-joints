@@ -177,7 +177,7 @@ class DoubleJoint(BaseShape):
 # adding new joints here
 class GooseNeckJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
-        self.w = 40.
+        self.w = 50.
         self.h = 25.
         self.contact_ids = [1] # update contact ids later
         self.traction_len = self.h
@@ -187,12 +187,12 @@ class GooseNeckJoint(BaseShape):
         assert len(self.shape_params) == 6
         shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
         point_list = \
-            [two_d_tensor(self.w / 2., 0.),
-             two_d_tensor(self.w / 2., shape_params_tensor[0]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[1], shape_params_tensor[0]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[2], shape_params_tensor[3]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[4], shape_params_tensor[5]),
-             two_d_tensor(self.w / 2. + shape_params_tensor[4], self.h / 2)
+            [two_d_tensor(self.w * 0.4, 0.),
+             two_d_tensor(self.w * 0.4, shape_params_tensor[0]),
+             two_d_tensor(self.w * 0.4 + shape_params_tensor[1], shape_params_tensor[0]),
+             two_d_tensor(self.w * 0.4 + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w * 0.4 + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w * 0.4 + shape_params_tensor[4], self.h / 2)
              ]
         x = 0. if self.side == 'left' else self.w 
         point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
@@ -233,14 +233,14 @@ class LapJoint(BaseShape):
         super().__init__(side, shape_params, opt)
 
     def get_point_list(self):
-        assert len(self.shape_params) == 5
+        assert len(self.shape_params) == 6
         shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
         point_list = \
             [two_d_tensor(self.w / 4., 0.),
              two_d_tensor(self.w / 4., shape_params_tensor[0]),
              two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[0]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[2]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[4]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[4], shape_params_tensor[5]),
              two_d_tensor(self.w  - self.w / 4., self.h/2)
              ]
 
@@ -291,11 +291,11 @@ class RabbetJoint(BaseShape):
             [two_d_tensor(self.w / 4., 0.),
              two_d_tensor(self.w / 4., shape_params_tensor[0]),
              two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[0]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[2]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[4]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[3], shape_params_tensor[0]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[5], shape_params_tensor[6]),
-             two_d_tensor(self.w / 4. + shape_params_tensor[5], self.h / 2.)
+             two_d_tensor(self.w / 4. + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[4], shape_params_tensor[0]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[6], shape_params_tensor[7]),
+             two_d_tensor(self.w / 4. + shape_params_tensor[6], self.h / 2.)
              ]
 
         x = 0. if self.side == 'left' else self.w 
@@ -366,22 +366,22 @@ if __name__ == '__main__':
     opt = parse_args()
     # if none defined simple joint
     #opt.shape_name = 'gooseneck_joint'
-    #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 14, 7.5]
-
+    #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 16, 7.5]
+    
     #opt.shape_name = 'scarf_joint'
-    #opt.init_shape_params = [1.5, 5., 14.5, 13.5, 15.5, 11.5]
+    #opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
 
     #opt.shape_name = 'lap_joint'
-    #opt.init_shape_params = [15., 5., 10., 20., 10.]
+    #opt.init_shape_params = [15., 5., 5., 10., 20., 10.]
 
     #opt.shape_name = 'dovetail_scarf_joint'
-    #opt.init_shape_params = [2.5, 7.5, 5., 15., 14.5, 12.5, 12.5, 17.5]
+    #opt.init_shape_params = [2.5, 7.5, 5., 15., 14.5, 11.5, 12.5, 14.5]
 
     #opt.shape_name = 'double_joint'
     # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
 
-    #opt.shape_name = 'rabbet_joint'
-    #opt.init_shape_params = [20., 10., 10., 15., 10., 25., 20.]
+    opt.shape_name = 'rabbet_joint'
+    opt.init_shape_params = [20., 10., 10., 10., 15., 10., 25., 20.]
 
     #opt.shape_name = 'test_joint'
     #opt.init_shape_params = [10.]
