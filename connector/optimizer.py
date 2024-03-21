@@ -394,12 +394,12 @@ if __name__ == '__main__':
     output_file_path = os.path.join("output", "results.json")
 
     init_params = [10.795044579355393, 3.4424377831583315, 8.302111706576671]
-
+        
     start_time = time.time()
     print("Epoch: 1")
     result, disp = optimize(init_params)
     append_to_json(data, init_params, result, disp, output_file_path)
-    for epoch in range(20):
+    for epoch in range(19):
         print("\n")
         print(f"Epoch: {epoch+2}")
         params = rand_params(init_params)

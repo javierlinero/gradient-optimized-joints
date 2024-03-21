@@ -179,7 +179,7 @@ class GooseNeckJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 50.
         self.h = 25.
-        self.contact_ids = [1] # update contact ids later
+        self.contact_ids = [2,3,4] # update contact ids later
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
     
@@ -203,7 +203,7 @@ class ScarfJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
         self.h = 50.
-        self.contact_ids = [1]
+        self.contact_ids = [2,3,4]
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
 
@@ -228,7 +228,7 @@ class LapJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
         self.h = 50.
-        self.contact_ids = [1]
+        self.contact_ids = [2,3,4]
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
 
@@ -253,7 +253,7 @@ class DoveScarfJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
         self.h = 50.
-        self.contact_ids = [1]
+        self.contact_ids = [2,4,5,8]
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
     
@@ -365,6 +365,11 @@ if __name__ == '__main__':
     from args import parse_args
     opt = parse_args()
     # if none defined simple joint
+
+    opt.shape_name = 'simple_joint'
+    opt.init_shape_params = [11.09522583715706, 3.402814262541338, 8.255697038658727]
+    opt.init_shape_params = [10.75663947644681, 3.2912300285786045, 7.8443222318319865]
+
     #opt.shape_name = 'gooseneck_joint'
     #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 16, 7.5]
     
@@ -383,11 +388,11 @@ if __name__ == '__main__':
     #opt.shape_name = 'rabbet_joint'
     #opt.init_shape_params = [20., 10., 10., 10., 15., 10., 25., 20.]
 
-    opt.shape_name = 'test_joint'
-    opt.init_shape_params = [10.]
+    #opt.shape_name = 'test_joint'
+    #opt.init_shape_params = [10.]
 
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
-    plot_joint(l, r, 40.)
-    #dolfin_plot(l.mesh)
-    #dolfin_plot(r.mesh)
+    #plot_joint(l, r, 40.)
+    dolfin_plot(l.mesh)
+    dolfin_plot(r.mesh)
