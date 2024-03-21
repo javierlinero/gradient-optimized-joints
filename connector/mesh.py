@@ -47,15 +47,15 @@ def get_mesh(side, opt, vis=False):
             return on_contact(x, opt) and on_boundary
 
     if side == 'left':
-        point_list = [[0., opt.h / 2.], [0., 0.]]
+        point_list = [[0., opt.h / 2.], [0., 0.]] #change back to opt.h/2
     elif side == 'right':
-        point_list = [[opt.w, opt.h / 2.], [opt.w, 0.]]
+        point_list = [[opt.w, opt.h / 2.], [opt.w, 0.]] #change back to opt.h/2
     else:
         raise Exception
     point_list.extend([[opt.w / 2., 0.], [opt.w / 2., opt.control_points[0][1]]])
     for control_point in opt.control_points:
         point_list.append([opt.w / 2. + control_point[0], control_point[1]])
-    point_list.append([opt.w / 2. + opt.control_points[-1][0], opt.h / 2.])
+    point_list.append([opt.w / 2. + opt.control_points[-1][0], opt.h / 2.]) #change back to opt.h/2
     opt.edge_list = point_list[len(point_list) - len(opt.control_points) - 2:]
     with tempfile.NamedTemporaryFile(suffix='.xml') as xml_file:
         with pygmsh.occ.Geometry() as geom:

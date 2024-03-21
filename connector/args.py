@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument('--ctrl_var', type=str, default='mesh_offset',
                         choices=['spatial_coordinate', 'mesh_offset'],
                         help='control variable selection for dolfin-adjoint')
-    parser.add_argument('--gd_iter', type=int, default=5,
+    parser.add_argument('--gd_iter', type=int, default=15,
                         help='number of gradient descent iterations')
     parser.add_argument('--gd_lr', type=float, default=.5,
                         help='learning rate when line search fails')

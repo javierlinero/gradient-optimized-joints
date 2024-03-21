@@ -6,7 +6,7 @@ import pygmsh
 import tempfile
 import matplotlib.pyplot as plt
 import dolfin_adjoint
-from visualization import dolfin_plot
+from visualization import dolfin_plot, plot_joint
 
 
 def plot_line_segments(point_lists):
@@ -216,7 +216,7 @@ class ScarfJoint(BaseShape):
              two_d_tensor(self.w / 8. + shape_params_tensor[2], shape_params_tensor[3]),
              two_d_tensor(self.w / 8. + shape_params_tensor[4], shape_params_tensor[5]),
              two_d_tensor(self.w / 8. + shape_params_tensor[4] + shape_params_tensor[2] - shape_params_tensor[0], shape_params_tensor[5] + shape_params_tensor[3] - shape_params_tensor[1]),
-             two_d_tensor(self.w - self.w / 8., self.h / 2)
+             two_d_tensor(self.w - self.w / 8., self.h / 2.)
              ]
 
         x = 0. if self.side == 'left' else self.w 
@@ -368,8 +368,8 @@ if __name__ == '__main__':
     #opt.shape_name = 'gooseneck_joint'
     #opt.init_shape_params = [6.25, 5., 6.5, 3.5, 16, 7.5]
     
-    opt.shape_name = 'scarf_joint'
-    opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
+    #opt.shape_name = 'scarf_joint'
+    #opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
 
     #opt.shape_name = 'lap_joint'
     #opt.init_shape_params = [15., 5., 5., 10., 20., 10.]
@@ -378,15 +378,16 @@ if __name__ == '__main__':
     #opt.init_shape_params = [2.5, 7.5, 5., 15., 14.5, 11.5, 12.5, 14.5]
 
     #opt.shape_name = 'double_joint'
-    # opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
+    #opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
 
     #opt.shape_name = 'rabbet_joint'
     #opt.init_shape_params = [20., 10., 10., 10., 15., 10., 25., 20.]
 
-    #opt.shape_name = 'test_joint'
-    #opt.init_shape_params = [10.]
+    opt.shape_name = 'test_joint'
+    opt.init_shape_params = [10.]
 
     l = get_shape(side='left', shape_params=opt.init_shape_params, opt=opt)
     r = get_shape(side='right', shape_params=opt.init_shape_params, opt=opt)
-    dolfin_plot(l.mesh)
-    dolfin_plot(r.mesh)
+    plot_joint(l, r, 40.)
+    #dolfin_plot(l.mesh)
+    #dolfin_plot(r.mesh)

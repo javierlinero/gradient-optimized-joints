@@ -59,7 +59,7 @@ class FEM:
         self.u = dolfin_adjoint.Function(self.vfs)  # Displacement from previous iteration
         self.bcs = \
             [dolfin_adjoint.DirichletBC(self.vfs.sub(1), dolfin_adjoint.Constant(0.),
-                                        'near(x[1], {}) && on_boundary'.format(self.shape.h / 2.), 'topological')]
+                                        'near(x[1], {}) && on_boundary'.format(self.shape.h / 2.), 'topological')] #change back to 'near(x[1], {}) && on_boundary'.format(self.shape.h / 2.)
         grad_u = dolfin.grad(self.u)
         strain = 0.5 * (grad_u + grad_u.T)
         self.e = self.lmbda / 2 * dolfin.tr(strain) ** 2 + self.mu * dolfin.inner(strain, strain)
@@ -177,9 +177,10 @@ class FEM:
         problem = dolfin_adjoint.NonlinearVariationalProblem(dE, self.u, self.bcs, jacE)
         solver = dolfin_adjoint.NonlinearVariationalSolver(problem)
         solver.solve()
-        # for idx, proj_u in enumerate(proj_u_list):
-        #     print('e', float(dolfin_adjoint.assemble(E)))
-        #     print('assembled', float(dolfin_adjoint.assemble(self.pen_w * soft_relu(proj_u, opt) * self.ds(idx + 2))))
+        
+        #for idx, proj_u in enumerate(proj_u_list):
+        #    print('e', float(dolfin_adjoint.assemble(E)))
+        #    print('assembled', float(dolfin_adjoint.assemble(self.pen_w * soft_relu(proj_u, opt) * self.ds(idx + 2))))
         if vis_stress:
             self.vis_stress()
         if vis_mesh:

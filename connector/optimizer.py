@@ -6,12 +6,14 @@ import dolfin
 import functools
 import matplotlib.pyplot as plt
 import dolfin_adjoint
+import json
+import os
+from init_param_script import rand_params
 from fem import FEM
 from args import parse_args
 from mesh import get_mesh
 from shapes import get_shape
 from visualization import dolfin_plot, plot_joint, plot_grad
-
 
 def on_edge(x0, y0, x1, y1, x2, y2, eps, incl_endpts):
     if not (min(x1, x2) - eps <= x0 <= max(x1, x2) + eps) or not (min(y1, y2) - eps <= y0 <= max(y1, y2) + eps):
@@ -171,9 +173,10 @@ def list2str(x):
     return ', '.join([str(item) for item in x])
 
 
-def optimize():
+def optimize(params):
     dolfin.set_log_active(False)
     opt = parse_args()
+    opt.init_shape_params = params
     x0 = np.array(opt.init_shape_params)
     left_shape = get_shape(side='left', shape_params=x0, opt=opt)
     # left_shape.visualize()
@@ -214,6 +217,9 @@ def optimize():
     x = x0
     best = None
     best_x = None
+
+    # displacements = []
+
     for _ in range(opt.gd_iter):
         grad = jac(shape_params=x, lookup=lookup, opt=opt)
         amax = None
@@ -227,19 +233,51 @@ def optimize():
         if alpha is None:
             alpha = np.random.rand() * opt.gd_lr
         x = x - alpha * grad
-        print(list2str(x))
+        #print(list2str(x))
         value = dis(shape_params=x, lookup=lookup, opt=opt)
         if best is None or value < best:
             best = value
             best_x = np.array(x)
-            print(list2str(best_x), best)
+            #print(list2str(best_x), best)
+        print(best_x)
+        # displacements.append(best_x)
+    
+    # x_displacements = [disp[0] for disp in displacements]
+    # y_displacements = [disp[1] for disp in displacements]
+    # z_displacements = [disp[2] for disp in displacements]
+
+    # # Plot x-displacements
+    # plt.plot(x_displacements, label='X Displacement')
+    # plt.xlabel('Iteration')
+    # plt.ylabel('Displacement')
+    # plt.title('X Displacement during Optimization')
+    # plt.legend()
+    # plt.show()
+
+    # # Plot y-displacements
+    # plt.plot(y_displacements, label='Y Displacement')
+    # plt.xlabel('Iteration')
+    # plt.ylabel('Displacement')
+    # plt.title('Y Displacement during Optimization')
+    # plt.legend()
+    # plt.show()
+
+    # # Plot z-displacements
+    # plt.plot(z_displacements, label='Z Displacement')
+    # plt.xlabel('Iteration')
+    # plt.ylabel('Displacement')
+    # plt.title('Z Displacement during Optimization')
+    # plt.legend()
+    # plt.show()
+    
     res_x = best_x
     print('x0:', list2str(x0))
     print('result:', list2str(res_x))
     opt.control_points = res_x
-    get_shape(side='left', shape_params=res_x, opt=opt).visualize()
-    get_shape(side='right', shape_params=res_x, opt=opt).visualize()
+    #get_shape(side='left', shape_params=res_x, opt=opt).visualize()
+    #get_shape(side='right', shape_params=res_x, opt=opt).visualize()
     print('disp', dis(shape_params=res_x, lookup=lookup, opt=opt))
+    return(res_x.tolist(), dis(shape_params=res_x, lookup=lookup, opt=opt))
 
 
 def get_disp(opt):
@@ -340,8 +378,30 @@ def search():
 
 if __name__ == '__main__':
     # search()
-    optimize()
+    import sys
+    sys.stderr = open('/dev/null', 'w') # turn off stderr
+    data = []
+    
 
+    init_params = [10.795044579355393, 3.4424377831583315, 8.302111706576671]
+    result, disp = optimize(init_params)
+    data.append((init_params, result, disp))
+    for _ in range(1):
+        params = rand_params(init_params)
+        result, disp = optimize(params)
+        data.append((params, result, disp))
+
+    smallest_tuple = min(data, key=lambda x: x[2])
+    print("Dataset of all Stored Parameters:")
+    print(data)
+    print("Minimized Displacement Tuple:")
+    print(smallest_tuple)
+
+    output_file_path = os.path.join("output", "results.json")
+
+    with open(output_file_path, "w") as f:
+        json.dump(data, f)
+    
     # query_list = [
     #     [20.000000000000000, 8.000000000000000],
     #     [22.000000000000000, 8.000000000000000],
