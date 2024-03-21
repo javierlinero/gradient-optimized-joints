@@ -378,29 +378,41 @@ def search():
 
 if __name__ == '__main__':
     # search()
+    import time
     import sys
+    import heapq
+
+    def append_to_json(data, params, result, disp, output_file_path):
+        data.append({"params": params, "result": result, "disp": disp})
+        with open(output_file_path, "w") as f:  # Open the file in append mode
+            json.dump(data, f, indent=4)  
+            f.write('\n')  # Add a newline after each JSON object
+
     sys.stderr = open('/dev/null', 'w') # turn off stderr
+
     data = []
-    
-
-    init_params = [10.795044579355393, 3.4424377831583315, 8.302111706576671]
-    result, disp = optimize(init_params)
-    data.append((init_params, result, disp))
-    for _ in range(1):
-        params = rand_params(init_params)
-        result, disp = optimize(params)
-        data.append((params, result, disp))
-
-    smallest_tuple = min(data, key=lambda x: x[2])
-    print("Dataset of all Stored Parameters:")
-    print(data)
-    print("Minimized Displacement Tuple:")
-    print(smallest_tuple)
-
     output_file_path = os.path.join("output", "results.json")
 
-    with open(output_file_path, "w") as f:
-        json.dump(data, f)
+    init_params = [10.795044579355393, 3.4424377831583315, 8.302111706576671]
+
+    start_time = time.time()
+    print("Epoch: 1")
+    result, disp = optimize(init_params)
+    append_to_json(data, init_params, result, disp, output_file_path)
+    for epoch in range(20):
+        print("\n")
+        print(f"Epoch: {epoch+2}")
+        params = rand_params(init_params)
+        result, disp = optimize(params)
+        append_to_json(data, init_params, result, disp, output_file_path)
+
+    min_disps = heapq.nsmallest(2, data, key=lambda x: x["disp"])
+    print("\n")
+    print("Top 2 Minimized Displacement Tuples:")
+    for disp in min_disps:
+        print(disp)
+    elapsed_time = time.time() - start_time
+    print("Elapsed time:", elapsed_time, "seconds")
     
     # query_list = [
     #     [20.000000000000000, 8.000000000000000],
