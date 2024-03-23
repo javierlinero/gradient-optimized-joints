@@ -4,7 +4,7 @@ import random
 def rand_params(vals):
     randomized = []
     for value in vals:
-        dist = np.random.normal(loc=value, scale=1.50, size=1000)
+        dist = np.random.normal(loc=value, scale=0.50, size=1000)
         dist = dist.tolist()
         samples = random.sample(dist, 30)
         avg = np.average(samples)

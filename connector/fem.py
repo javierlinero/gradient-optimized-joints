@@ -176,6 +176,11 @@ class FEM:
 
         problem = dolfin_adjoint.NonlinearVariationalProblem(dE, self.u, self.bcs, jacE)
         solver = dolfin_adjoint.NonlinearVariationalSolver(problem)
+
+        #solver.parameters["newton_solver"]["maximum_iterations"] = 1000  # Increase the maximum number of iterations
+        #solver.parameters["newton_solver"]["absolute_tolerance"] = 1e-8  # Set absolute tolerance for convergence
+        #solver.parameters["newton_solver"]["relative_tolerance"] = 1e-6  # Set relative tolerance for convergence
+
         solver.solve()
         
         #for idx, proj_u in enumerate(proj_u_list):

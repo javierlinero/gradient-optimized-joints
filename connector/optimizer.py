@@ -63,6 +63,8 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
 
     regularizer = None
     for contact_id in left.shape.contact_ids:
+        if opt.shape_name == 'gooseneck_joint': #bc it has to have a longer neck
+            opt.reg_soft_min_len = 2.5
         length = torch.sum(
             (left.shape.point_list_tensor[contact_id + 1] - left.shape.point_list_tensor[contact_id]) ** 2.) ** 0.5
         penalty = torch.clamp(opt.reg_soft_min_len - length, min=0.) ** 2
@@ -78,7 +80,7 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
     elif opt.shape_name == 'double_joint':
         width = (left.shape.shape_params_tensor[1] - left.shape.shape_params_tensor[0]) * 2.
     elif opt.shape_name == 'gooseneck_joint': # must fill in these after
-        width = left.shape.h
+        width = left.shape.h - left.shape.shape_params_tensor[0] * 2.
     elif opt.shape_name == 'scarf_joint':
         width = left.shape.h
     elif opt.shape_name == 'lap_joint':
@@ -116,10 +118,10 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
         shape_params_tensor.retain_grad()
 
         if id(fem) == id(left):
-            vtx_tensor.backward(gradient=torch.tensor(vtx_grad_list), retain_graph=True)
+            vtx_tensor.backward(gradient=torch.tensor(np.array(vtx_grad_list)), retain_graph=True)
             regularizer.backward()
         else:
-            vtx_tensor.backward(gradient=torch.tensor(vtx_grad_list))
+            vtx_tensor.backward(gradient=torch.tensor(np.array(vtx_grad_list)))
 
         if shape_params_grad is None:
             shape_params_grad = shape_params_tensor.grad.detach().cpu().numpy()
@@ -173,10 +175,11 @@ def list2str(x):
     return ', '.join([str(item) for item in x])
 
 
-def optimize(params):
+def optimize(params, shape_name):
     dolfin.set_log_active(False)
     opt = parse_args()
     opt.init_shape_params = params
+    opt.shape_name = shape_name
     x0 = np.array(opt.init_shape_params)
     left_shape = get_shape(side='left', shape_params=x0, opt=opt)
     # left_shape.visualize()
@@ -220,7 +223,7 @@ def optimize(params):
 
     # displacements = []
 
-    for _ in range(opt.gd_iter):
+    for idx in range(opt.gd_iter):
         grad = jac(shape_params=x, lookup=lookup, opt=opt)
         amax = None
 
@@ -239,7 +242,8 @@ def optimize(params):
             best = value
             best_x = np.array(x)
             #print(list2str(best_x), best)
-        print(best_x)
+        print(f"Iter: {idx+1}, Values: {best_x}")
+        #print(best_x)
         # displacements.append(best_x)
     
     # x_displacements = [disp[0] for disp in displacements]
@@ -388,23 +392,27 @@ if __name__ == '__main__':
             json.dump(data, f, indent=4)  
             f.write('\n')  # Add a newline after each JSON object
 
-    sys.stderr = open('/dev/null', 'w') # turn off stderr
+    #sys.stderr = open('/dev/null', 'w') # turn off stderr
 
     data = []
     output_file_path = os.path.join("output", "results.json")
 
-    init_params = [10.795044579355393, 3.4424377831583315, 8.302111706576671]
-        
+    #init_params = [10.75, 3.5, 8.5]
+    #shape_name = 'simple_joint'
+
+    init_params = [5.5, 4.5, 6.5, 3.5, 15, 8.5]
+    #init_params = rand_params(init_params)
+    shape_name = 'gooseneck_joint'
+    
     start_time = time.time()
     print("Epoch: 1")
-    result, disp = optimize(init_params)
+    result, disp = optimize(init_params, shape_name)
     append_to_json(data, init_params, result, disp, output_file_path)
-    for epoch in range(19):
-        print("\n")
-        print(f"Epoch: {epoch+2}")
-        params = rand_params(init_params)
-        result, disp = optimize(params)
-        append_to_json(data, init_params, result, disp, output_file_path)
+    #for epoch in range(19):
+    #    print(f"Epoch: {epoch+2}")
+    #    params = rand_params(init_params)
+    #    result, disp = optimize(params, shape_name)
+    #    append_to_json(data, params, result, disp, output_file_path)
 
     min_disps = heapq.nsmallest(2, data, key=lambda x: x["disp"])
     print("\n")
