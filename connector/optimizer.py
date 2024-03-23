@@ -392,7 +392,7 @@ if __name__ == '__main__':
             json.dump(data, f, indent=4)  
             f.write('\n')  # Add a newline after each JSON object
 
-    #sys.stderr = open('/dev/null', 'w') # turn off stderr
+    sys.stderr = open('/dev/null', 'w') # turn off stderr
 
     data = []
     output_file_path = os.path.join("output", "results.json")
