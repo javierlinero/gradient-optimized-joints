@@ -408,11 +408,14 @@ if __name__ == '__main__':
     print("Epoch: 1")
     result, disp = optimize(init_params, shape_name)
     append_to_json(data, init_params, result, disp, output_file_path)
-    #for epoch in range(19):
-    #    print(f"Epoch: {epoch+2}")
-    #    params = rand_params(init_params)
-    #    result, disp = optimize(params, shape_name)
-    #    append_to_json(data, params, result, disp, output_file_path)
+    for epoch in range(19):
+        print(f"Epoch: {epoch+2}")
+        params = rand_params(init_params)
+        try:
+            result, disp = optimize(params, shape_name)
+            append_to_json(data, params, result, disp, output_file_path)
+        except Exception as ex:
+            print(f"Exception error {ex}")
 
     min_disps = heapq.nsmallest(2, data, key=lambda x: x["disp"])
     print("\n")
