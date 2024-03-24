@@ -65,6 +65,8 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
     for contact_id in left.shape.contact_ids:
         if opt.shape_name == 'gooseneck_joint': #bc it has to have a longer neck
             opt.reg_soft_min_len = 2.5
+        if opt.shape_name == 'lap_joint':
+            opt.reg_soft_min_len = 10.5
         length = torch.sum(
             (left.shape.point_list_tensor[contact_id + 1] - left.shape.point_list_tensor[contact_id]) ** 2.) ** 0.5
         penalty = torch.clamp(opt.reg_soft_min_len - length, min=0.) ** 2
@@ -84,7 +86,8 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
     elif opt.shape_name == 'scarf_joint':
         width = left.shape.h
     elif opt.shape_name == 'lap_joint':
-        width = left.shape.h 
+        width = left.shape.h - left.shape.shape_params_tensor[0] * 2
+        opt.reg_soft_min_width = 12.5
     elif opt.shape_name == 'dovetail_scarf_joint':
         width = left.shape.h 
     elif opt.shape_name == 'rabbet_joint':
@@ -392,30 +395,37 @@ if __name__ == '__main__':
             json.dump(data, f, indent=4)  
             f.write('\n')  # Add a newline after each JSON object
 
-    sys.stderr = open('/dev/null', 'w') # turn off stderr
+    #sys.stderr = open('/dev/null', 'w') # turn off stderr
 
     data = []
     output_file_path = os.path.join("output", "results.json")
 
+    #init_params = []
+    #shape_name = ''
+
     #init_params = [10.75, 3.5, 8.5]
     #shape_name = 'simple_joint'
 
-    init_params = [5.5, 4.5, 6.5, 3.5, 15, 8.5]
+    #init_params = [5.5, 4.5, 6.5, 3.5, 15, 8.5]
     #init_params = rand_params(init_params)
-    shape_name = 'gooseneck_joint'
-    
+    #shape_name = 'gooseneck_joint'
+
+    shape_name = 'lap_joint'
+    init_params = [15., 5., 5., 10., 20., 10.]
+
     start_time = time.time()
     print("Epoch: 1")
     result, disp = optimize(init_params, shape_name)
     append_to_json(data, init_params, result, disp, output_file_path)
-    for epoch in range(19):
-        print(f"Epoch: {epoch+2}")
-        params = rand_params(init_params)
-        try:
-            result, disp = optimize(params, shape_name)
-            append_to_json(data, params, result, disp, output_file_path)
-        except Exception as ex:
-            print(f"Exception error {ex}")
+    #for epoch in range(19):
+    #    print(f"Epoch: {epoch+2}")
+    #    params = rand_params(init_params)
+    #    try:
+    #        result, disp = optimize(params, shape_name)
+    #        append_to_json(data, params, result, disp, output_file_path)
+    #    except Exception as ex:
+    #        print(f"Exception error {ex}")
+    #    print("\n")
 
     min_disps = heapq.nsmallest(2, data, key=lambda x: x["disp"])
     print("\n")
