@@ -202,7 +202,7 @@ class GooseNeckJoint(BaseShape):
 class ScarfJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
-        self.h = 50.
+        self.h = 25.
         self.contact_ids = [2,3,4]
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
@@ -215,7 +215,7 @@ class ScarfJoint(BaseShape):
              two_d_tensor(self.w / 8. + shape_params_tensor[0], shape_params_tensor[1]),
              two_d_tensor(self.w / 8. + shape_params_tensor[2], shape_params_tensor[3]),
              two_d_tensor(self.w / 8. + shape_params_tensor[4], shape_params_tensor[5]),
-             two_d_tensor(self.w / 8. + shape_params_tensor[4] + shape_params_tensor[2] - shape_params_tensor[0], shape_params_tensor[5] + shape_params_tensor[3] - shape_params_tensor[1]),
+             two_d_tensor(self.w - self.w / 8. - shape_params_tensor[0], self.h / 2. - shape_params_tensor[1]),
              two_d_tensor(self.w - self.w / 8., self.h / 2.)
              ]
 
@@ -227,7 +227,7 @@ class ScarfJoint(BaseShape):
 class LapJoint(BaseShape):
     def __init__(self, side, shape_params, opt):
         self.w = 40.
-        self.h = 50.
+        self.h = 25.
         self.contact_ids = [2,3,4]
         self.traction_len = self.h
         super().__init__(side, shape_params, opt)
@@ -241,7 +241,7 @@ class LapJoint(BaseShape):
              two_d_tensor(self.w / 4. + shape_params_tensor[1], shape_params_tensor[0]),
              two_d_tensor(self.w / 4. + shape_params_tensor[2], shape_params_tensor[3]),
              two_d_tensor(self.w / 4. + shape_params_tensor[4], shape_params_tensor[5]),
-             two_d_tensor(self.w  - self.w / 4., self.h/2)
+             two_d_tensor(self.w / 4. + shape_params_tensor[4], self.h/2)
              ]
 
         x = 0. if self.side == 'left' else self.w 
@@ -378,11 +378,16 @@ if __name__ == '__main__':
     #opt.init_shape_params = [5.829022066726009, 5.405563486754575, 5.584668539017124, 3.3412057791790226, 14.844819582417419, 8.580114263017458]
     #opt.init_shape_params = [5.906454392706691, 5.445595364605609, 5.610540276963511, 3.417307568273767, 14.855623681506957, 8.656437612525608]
 
-    #opt.shape_name = 'scarf_joint'
-    #opt.init_shape_params = [1.5, 5., 14.5, 14.5, 13.5, 10.5]
-
-    opt.shape_name = 'lap_joint'
-    opt.init_shape_params = [15., 5., 5., 10., 20., 10.]
+    opt.shape_name = 'scarf_joint'
+    #opt.init_shape_params = [1.5, 2.5, 14.5, 7.25, 13.5, 5.25]
+    #opt.init_shape_params = [1.5437586875276876, 2.3518654593507975, 14.22267391080198, 7.705935755965082, 13.792762472092132, 5.271502102066418]
+    #opt.init_shape_params = [1.5631212863541564, 2.2821623300421705, 14.297202872860344, 7.614318498916319, 13.772197633310087, 5.176078623790447]
+    #opt.init_shape_params = [1.585672495044579, 2.1974015064156647, 14.305387297652876, 7.626682100834308, 13.78299262416032, 5.217622063563789]
+    opt.init_shape_params =  [1.5677684468118256, 2.019474191625762, 14.285972352448487, 7.613917249947341, 13.774640181509218, 5.177353563532924]
+    #opt.init_shape_params =  [1.6434254015652183, 2.0687839880754018, 14.27036058922764, 7.69823667518269, 13.813688575301642, 5.244746689588424]
+    
+    #opt.shape_name = 'lap_joint'
+    #opt.init_shape_params = [7.5, 5., 5., 5., 12.5, 5.]
 
     #opt.shape_name = 'dovetail_scarf_joint'
     #opt.init_shape_params = [2.5, 7.5, 5., 15., 14.5, 11.5, 12.5, 14.5]
