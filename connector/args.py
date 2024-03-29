@@ -51,7 +51,7 @@ def parse_args():
                         help='include endpoints during gradient calculation')
     parser.add_argument('--ptb_n', type=int, default=3,
                         help='number of the random perturbations applied')
-    parser.add_argument('--ptb_scale', type=float, default=.01,
+    parser.add_argument('--ptb_scale', type=float, default=.0075,
                         help='scale of the random perturbations applied')
     parser.add_argument('--reg_w', type=float, default=1.,
                         help='weight for the regularizer')
