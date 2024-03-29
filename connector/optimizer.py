@@ -67,6 +67,12 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
             opt.reg_soft_min_len = 2.5
         if opt.shape_name == 'scarf_joint':
             opt.reg_soft_min_len = 2.5
+        if opt.shape_name == 'rabbet_joint':
+            opt.reg_soft_min_len = 2.5
+        if opt.shape_name == 'lap_joint':
+            opt.reg_soft_min_len = 2.5
+        if opt.shape_name == 'dovetail_scarf_joint':
+            opt.reg_soft_min_len = 2.5
         length = torch.sum(
             (left.shape.point_list_tensor[contact_id + 1] - left.shape.point_list_tensor[contact_id]) ** 2.) ** 0.5
         penalty = torch.clamp(opt.reg_soft_min_len - length, min=0.) ** 2
@@ -86,16 +92,23 @@ def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
     elif opt.shape_name == 'scarf_joint':
         width = left.shape.h - left.shape.shape_params_tensor[3] * 2.
     elif opt.shape_name == 'lap_joint':
-        width = left.shape.h - left.shape.shape_params_tensor[0] * 2
+        width = left.shape.h - left.shape.shape_params_tensor[0] * 2 ##not working rn
     elif opt.shape_name == 'dovetail_scarf_joint':
-        width = left.shape.h 
+        width1 = left.shape.h - left.shape.shape_params_tensor[5] * 2
+        width2 = left.shape.shape_params_tensor[2]
     elif opt.shape_name == 'rabbet_joint':
-        width = left.shape.h 
+        width = left.shape.h - left.shape.shape_params_tensor[1] * 2 
     else:
         raise Exception
-    regularizer = regularizer + torch.clamp(opt.reg_soft_min_width - width, min=0.) ** 2
+    
+    if opt.shape_name == 'dovetail_scarf_joint':
+        regularizer = regularizer + torch.clamp(opt.reg_soft_min_width - width1, min=0.) ** 2
+        regularizer = regularizer + torch.clamp(opt.reg_soft_min_width - width2, min=0.) ** 2
+    else:
+        regularizer = regularizer + torch.clamp(opt.reg_soft_min_width - width, min=0.) ** 2
 
     regularizer = regularizer * opt.reg_w
+    
 
     for fem, grad in [(left, left_grad), (right, right_grad)]:
         vtx_tensor_list = []
@@ -223,7 +236,7 @@ def optimize(params, shape_name):
     best = None
     best_x = None
 
-    # displacements = []
+    displacements = []
 
     for idx in range(opt.gd_iter):
         grad = jac(shape_params=x, lookup=lookup, opt=opt)
@@ -246,9 +259,9 @@ def optimize(params, shape_name):
             #print(list2str(best_x), best)
         print(f"Iter: {idx+1}, Values: {best_x}")
         #print(best_x)
-        # displacements.append(best_x)
+        #displacements.append(best_x)
     
-    # x_displacements = [disp[0] for disp in displacements]
+    #x_displacements = [disp[0] for disp in displacements]
     # y_displacements = [disp[1] for disp in displacements]
     # z_displacements = [disp[2] for disp in displacements]
 
@@ -394,7 +407,7 @@ if __name__ == '__main__':
             json.dump(data, f, indent=4)  
             f.write('\n')  # Add a newline after each JSON object
 
-    sys.stderr = open('/dev/null', 'w') # turn off stderr
+    #sys.stderr = open('/dev/null', 'w') # turn off stderr
 
     data = []
     output_file_path = os.path.join("output", "results.json")
@@ -410,10 +423,16 @@ if __name__ == '__main__':
     #shape_name = 'gooseneck_joint'
 
     #shape_name = 'lap_joint'
-    #init_params = [7.5, 5., 5., 5., 12.5, 7.]
+    #init_params = [10., 5., 3.5, 5., 12.5, 6.]
 
-    init_params = [1.5, 2.5, 14.5, 7.25, 13.5, 5.25]
-    shape_name = 'scarf_joint'
+    #init_params = [1.5, 2.5, 14.5, 7.25, 13.5, 5.25]
+    #shape_name = 'scarf_joint'
+
+    #init_params = [10., 5., 5., 5., 7.5, 5., 12.5, 10.]
+    #shape_name = 'rabbet_joint'
+
+    init_params = [2.5, 3.75, 2.5, 7.5, 12.5, 7.25, 12.5, 5.75]
+    shape_name = 'dovetail_scarf_joint'
 
     start_time = time.time()
     print("Epoch: 1")
