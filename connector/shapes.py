@@ -187,12 +187,12 @@ class GooseNeckJoint(BaseShape):
         assert len(self.shape_params) == 6
         shape_params_tensor = torch.tensor(self.shape_params, requires_grad=True, dtype=torch.float64)
         point_list = \
-            [two_d_tensor(self.w * 0.4, 0.),
-             two_d_tensor(self.w * 0.4, shape_params_tensor[0]),
-             two_d_tensor(self.w * 0.4 + shape_params_tensor[1], shape_params_tensor[0]),
-             two_d_tensor(self.w * 0.4 + shape_params_tensor[2], shape_params_tensor[3]),
-             two_d_tensor(self.w * 0.4 + shape_params_tensor[4], shape_params_tensor[5]),
-             two_d_tensor(self.w * 0.4 + shape_params_tensor[4], self.h / 2)
+            [two_d_tensor(self.w * 0.3, 0.),
+             two_d_tensor(self.w * 0.3, shape_params_tensor[0]),
+             two_d_tensor(self.w * 0.3 + shape_params_tensor[1], shape_params_tensor[0]),
+             two_d_tensor(self.w * 0.3 + shape_params_tensor[2], shape_params_tensor[3]),
+             two_d_tensor(self.w * 0.3 + shape_params_tensor[4], shape_params_tensor[5]),
+             two_d_tensor(self.w * 0.3 + shape_params_tensor[4], self.h / 2)
              ]
         x = 0. if self.side == 'left' else self.w 
         point_list = [two_d_tensor(x, 0.)] + point_list + [two_d_tensor(x, self.h / 2.)]
@@ -370,8 +370,11 @@ if __name__ == '__main__':
     #opt.init_shape_params = [11.09522583715706, 3.402814262541338, 8.255697038658727]
     #opt.init_shape_params = [10.75663947644681, 3.2912300285786045, 7.8443222318319865]
 
-    #opt.shape_name = 'gooseneck_joint'
-    #opt.init_shape_params =  [5.5, 4.5, 6.5, 3.5, 15, 8.5]
+    opt.shape_name = 'gooseneck_joint'
+    opt.init_shape_params =  [5.5, 10, 10, 3, 20, 8.5]
+    opt.init_shape_params = 5.533996076603684, 10.30894125218098, 10.499117006411245, 3.064340846513361, 20.395316162803233, 8.597639121512778
+    #opt.init_shape_params = 5.806438738845788, 5.274990913767001, 5.422073628194587, 3.339200801944026, 15.217181433445996, 8.611239648331097
+    #opt.init_shape_params = [6.223862526151819, 4.610382705762201, 4.711375807427571, 3.724588694467258, 14.755971924872089, 8.558012231610377]
     #opt.init_shape_params = [5.605037407272536, 5.506728046189577, 5.604432227062989, 3.7894892923561656, 14.805797329280153, 8.689959557937993]
     #opt.init_shape_params =  [5.55519800090113, 5.513620885885361, 5.5469095174449645, 4.085337787107506, 14.823502449810613, 8.711441660281004]
     #opt.init_shape_params = [5.607203643794017, 5.5113608130272285, 5.558971040488088, 4.118777245861947, 15.040717304917573, 8.75985281528125]
@@ -392,14 +395,23 @@ if __name__ == '__main__':
     #opt.init_shape_params = [10., 5., 3.5, 5., 12.5, 5.]
     #opt.init_shape_params =[7.92789339340289, 4.598690097990076, 4.148167957757523, 5.504205827589188, 12.204302849772304, 7.61144267601873]
 
-    opt.shape_name = 'dovetail_scarf_joint'
-    opt.init_shape_params = [2.5, 3.75, 2.5, 7.5, 12.5, 7.25, 12.5, 5.75]
+    # opt.shape_name = 'dovetail_scarf_joint'
+    # opt.init_shape_params = [2.5, 3.75, 2.5, 7.5, 12.5, 7.25, 12.5, 5.75]
     #opt.init_shape_params = [2.11449452730177, 4.872657294659804, 3.4775853356072517, 6.106506766372234, 13.363328637761528, 7.6578329110580174, 13.657172140397298, 5.068218910322886]
     #opt.init_shape_params = [1.8755375735700293, 5.100059521423366, 3.464784612377812, 6.538116192946263, 13.442661315978116, 7.643346333300166, 13.577972870541789, 5.151034164939281]
     #opt.init_shape_params = [1.9426078630696757, 5.036515551287437, 3.462882733293337, 6.520557866847855, 13.206030456768593, 7.622348672672017, 13.47927540081169, 5.127610913819341]
     #opt.init_shape_params = [1.9320147321359322, 5.301400441300441, 3.3555626118017505, 7.011062523976736, 13.416264152987535, 7.669696813284092, 13.40810110088808, 5.1583967951437755]
     #opt.init_shape_params = [1.3692232390080425, 5.575476884618501, 3.4125486072798243, 7.649465261732008, 13.651587542285199, 7.774888852140875, 13.40732177025047, 5.285473330858033]
-
+    # opt.init_shape_params = [
+    #         1.3725191280063451,
+    #         5.478772288080844,
+    #         3.4025675136133455,
+    #         7.292475084512462,
+    #         12.25362789839277,
+    #         8.870353082018806,
+    #         12.839565718467112,
+    #         3.900203156518426
+    #     ]
     #opt.shape_name = 'double_joint'
     #opt.init_shape_params = [10., 14., 4., 6., 10., 12.]
 

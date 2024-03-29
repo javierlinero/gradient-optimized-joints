@@ -24,7 +24,7 @@ def parse_args():
                         help='Young''s modulus')
     parser.add_argument('--poisson_ratio', type=float, default=.4,
                         help='Poisson''s ratio')
-    parser.add_argument('--traction', type=float, default=.01,
+    parser.add_argument('--traction', type=float, default=.001,
                         help='magnitude of the tractive force')
     parser.add_argument('--pen_w', type=float, default=1.,
                         help='weight of the penalization term')
@@ -51,7 +51,7 @@ def parse_args():
                         help='include endpoints during gradient calculation')
     parser.add_argument('--ptb_n', type=int, default=3,
                         help='number of the random perturbations applied')
-    parser.add_argument('--ptb_scale', type=float, default=.0075,
+    parser.add_argument('--ptb_scale', type=float, default=.01,
                         help='scale of the random perturbations applied')
     parser.add_argument('--reg_w', type=float, default=1.,
                         help='weight for the regularizer')
