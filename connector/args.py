@@ -57,7 +57,7 @@ def parse_args():
                         help='weight for the regularizer')
     parser.add_argument('--reg_soft_min_len', type=float, default=1.5,
                         help='soft minimum length for the contacting length')
-    parser.add_argument('--reg_soft_min_width', type=float, default=3.5,
+    parser.add_argument('--reg_soft_min_width', type=float, default=2.5,
                         help='soft minimum width for the left-hand side')
 
     # misc

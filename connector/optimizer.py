@@ -415,13 +415,13 @@ if __name__ == '__main__':
     #init_params = []
     #shape_name = ''
 
-    #init_params = [10.75, 3.5, 8.5]
-    #shape_name = 'simple_joint'
+    init_params = [10.75, 3.5, 8.5]
+    shape_name = 'simple_joint'
 
     #init_params = [5.5, 4.5, 6.5, 3.5, 15, 8.5]
     #init_params = rand_params(init_params)
-    shape_name = 'gooseneck_joint'
-    init_params =  [5.5, 10, 11.5, 3, 20, 8.5]
+    #shape_name = 'gooseneck_joint'
+    #init_params =  [5.5, 10, 11.5, 3, 20, 8.5]
 
     #shape_name = 'lap_joint'
     #init_params = [10., 5., 3.5, 5., 12.5, 6.]
@@ -429,7 +429,7 @@ if __name__ == '__main__':
     #init_params = [1.5, 2.5, 14.5, 7.25, 13.5, 5.25]
     #shape_name = 'scarf_joint'
 
-    #init_params = [10., 5., 5., 5., 7.5, 5., 12.5, 10.]
+    #init_params = [10., 5., 5., 4.75, 7.5, 5., 12.5, 10.]
     #shape_name = 'rabbet_joint'
 
     # init_params = [2.5, 3.75, 2.5, 7.5, 12.5, 7.25, 12.5, 5.75]
