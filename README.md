@@ -39,9 +39,6 @@ pip install tqdm
 pip install torch
 ```
 
-## Argsparser
-Allows for the initial parameters of a mesh that needs to be optimized, where shapes.py has been augmented with numerous versions of interlocking joints. Likewise, it will also default to single dovetail joint for all program files.
-
 ## Setting up X11 Server for WSL2 Users
 You can utilize any type of X server, but for the sake of making this simple the prereqs is installing ubuntu on wsl2 on a windows 11 computer. When launching VcXsrv (XLaunch) use the following settings:
 
