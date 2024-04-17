@@ -1,67 +1,39 @@
-# install prereqs
-Due to the Legacy Version in which the code was implemented (2021), we must use legacy FEniCS thru debian/linux setup:
+<a name="readme-top"></a>
 
-[mshr](https://bitbucket.org/fenics-project/mshr/src/master/) is a package that isn't viable through v22.04 LTS, so we need v23.10:
 
-```
-sudo nano /etc/update-manager/release-upgrades
-```
+<br />
+<div align="center">
+  <a href="https://github.com/javierlinero/gradient-optimized-joints">
+    <img src="/src/images/logo.png" alt="Logo">
+  </a>
+  <h3 align="center">Gradient-Based Stiffness Optimization</h3>
 
-Set your prompt=normal and then do the following:
+</div>
 
-```
-sudo apt update && sudo apt dist-upgrade
-sudo do-release-upgrade
-```
+## About The Project:
+This project focuses on enhancing the design of woodworking joints through gradient-based stiffness optimization. Traditional joint methods often face issues with durability and environmental impact. Utilizing the Finite Element Method (FEM) and gradient descent techniques, this project aims to optimize the shape and efficiency of interlocking joints, such as dovetails and lap joints. By improving joint stiffness, the structural integrity and longevity of assembled objects are significantly enhanced, reducing material costs and simplifying assembly processes. This approach not only broadens the application possibilities of complex joinery but also contributes to more sustainable manufacturing practices.
 
-After installing the updated version, make sure to kill your terminal, restart WSL2 and check your version: 
-```
-lsb_release -a
-```
+## Main Features:
 
-Run the following to get fenics-legacy & gmsh:
-```
-sudo apt update && sudo apt dist-upgrade
-sudo apt-get install --no-install-recommends fenics
-sudo apt install python3-gmsh
-```
+### Shapes.py
+**What it does**: The shapes.py module provides functionalities to create and manipulate the shapes required for finite element analysis, using pygmsh to generate triangular mesh geometries for various woodworking joint designs.
+### FEM.py
+**What it does**: The fem.py module handles the setup and execution of finite element analyses for optimizing woodworking joint designs, utilizing mesh generation and stiffness evaluations to iteratively refine joint geometry.
+### optimizer.py
+**What it does**: The optimizer.py module orchestrates the optimization of woodworking joint designs by applying finite element methods and gradient-based optimization techniques. It integrates penalty structures and regularizers to enhance joint configurations for better mechanical performance, ensuring convergence through rigorous iterative adjustments.
+### init_param_script.py
+**What it does**: 
+The init_param_script.py script randomizes parameters for different woodworking joints to ensure varied configurations and avoid local minima.
 
-## Modules (thru python env)
-I have provided a requirements.txt file make sure to install all the proper packages, but if you'd like to do this manually use the following (v23.10 Ubuntu requires --break-system-packages or you must setup an env):
+## Prerequisites
+For a detailed guide on setting up a local version of this project, please refer to our comprehensive tutorial [here](/src/prerequisites/README.md).
 
-```
-pip install pygmsh
-pip install meshio
-pip install git+https://github.com/dolfin-adjoint/pyadjoint.git
-pip install dolfin-adjoint
-pip install matplotlib
-pip install tqdm
-pip install torch
-```
 
-## Setting up X11 Server for WSL2 Users
-You can utilize any type of X server, but for the sake of making this simple the prereqs is installing ubuntu on wsl2 on a windows 11 computer. When launching VcXsrv (XLaunch) use the following settings:
+### Built With:
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)
 
-1. Multiple Windows 
-    1. (Display number=-1)
-2. Start No client
-3. Clipboard
-    1. Primary Selection
-4. Disable access control
-
-Install the following python package
-```
-sudo apt-get install x11-apps
-sudo apt-get install python3-tk
-```
-Now we need to edit the DISPLAY env name (add this to the very bottom of ~/.bashrc)
-```
-export DISPLAY=`grep -oP "(?<=nameserver ).+" /etc/resolv.conf`:0.0
-```
-Then make sure you update your terminal with
-```
-source ~/.bashrc
-```
-
-Now you can use any program and it will display it onto your local machine.
-
+### Built on:
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
