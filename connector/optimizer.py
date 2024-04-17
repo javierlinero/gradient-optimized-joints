@@ -34,7 +34,7 @@ def two_d_tensor(a, b):
     return torch.cat([a.unsqueeze(dim=0), b.unsqueeze(dim=0)], dim=0).unsqueeze(dim=0)
 
 
-def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=False):
+def func(shape_params, ret_value, lookup, opt, vis_grad=False, vis_mesh=True):
     # print(shape_params, ret_value)
     assert ret_value in ['func', 'disp', 'grad']
 
@@ -415,19 +415,19 @@ if __name__ == '__main__':
     #init_params = []
     #shape_name = ''
 
-    init_params = [10.75, 3.5, 8.5]
-    shape_name = 'simple_joint'
+    # init_params = [10.75, 3.5, 8.5]
+    # shape_name = 'simple_joint'
 
     #init_params = [5.5, 4.5, 6.5, 3.5, 15, 8.5]
     #init_params = rand_params(init_params)
-    #shape_name = 'gooseneck_joint'
-    #init_params =  [5.5, 10, 11.5, 3, 20, 8.5]
+    shape_name = 'gooseneck_joint'
+    init_params = [6.5, 10, 11.5, 3, 20, 8.5]
 
     #shape_name = 'lap_joint'
     #init_params = [10., 5., 3.5, 5., 12.5, 6.]
 
-    #init_params = [1.5, 2.5, 14.5, 7.25, 13.5, 5.25]
-    #shape_name = 'scarf_joint'
+    # init_params = [1.5, 2.5, 14.5, 8.75, 13.5, 5.25]
+    # shape_name = 'scarf_joint'
 
     #init_params = [10., 5., 5., 4.75, 7.5, 5., 12.5, 10.]
     #shape_name = 'rabbet_joint'
