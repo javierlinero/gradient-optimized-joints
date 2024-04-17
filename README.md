@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/javierlinero/gradient-optimized-joints">
-    <img src="/src/images/logo.png" alt="Logo" width="100" height="100">
+    <img src="/src/images/logo_updated.png" alt="Logo" width="200" height="200">
   </a>
   <h3 align="center">Gradient-Based Stiffness Optimization</h3>
 
