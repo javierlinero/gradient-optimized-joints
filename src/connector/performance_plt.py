@@ -6,6 +6,7 @@ import numpy as np
 import os
 from scipy.interpolate import interp1d
 
+# process each csv file outputted from instron
 def process_csv(file_path):
     # pandas and data manipulation to put interval between 30N and 60N
     data = pd.read_csv(file_path, skiprows=1)
@@ -27,19 +28,19 @@ def process_csv(file_path):
 def calculate_youngs_modulus(data):
     from scipy.stats import linregress
     
-    # Perform linear regression on stress vs. strain
+    # linear regression model
     slope, intercept, r_value, p_value, std_err = linregress(data['Strain'], data['Stress'])
     
-    # Slope of the stress-strain curve is the Young's Modulus
-    youngs_modulus = slope  # in MPa (since stress is in MPa and strain is dimensionless)
+    # slope of the stress-strain curve is the Young's Modulus
+    youngs_modulus = slope
     
-    return youngs_modulus, r_value**2  # Return the modulus and the coefficient of determination
+    return youngs_modulus, r_value**2  
 
 
 def plot_stiffness(data_dict, joint_name):
     plt.figure(figsize=(15, 8))
     
-    # Specific hex color values for initial and optimized data
+    # picked out hex colors for blue & orange
     initial_colors = ['#3d5a80', '#98c1d9', '#e0fbfc', '#293241']
     optimized_colors = ['#ffc100', '#ff9a00', '#ff7400', '#ff4d00']
 
@@ -52,17 +53,16 @@ def plot_stiffness(data_dict, joint_name):
         else:
             optimized_data.append(data)
     
-    # Plot the initial data with specific blue shades
+    # initial w/ blue
     for i, data in enumerate(initial_data):
         color = initial_colors[i % len(initial_colors)]  # Cycle through colors if more than four datasets
         plt.plot(data['Time'], data['Stiffness (N/mm)'], label=f'{joint_name} Initial {i+1}', color=color)
     
-    # Plot the optimized data with specific orange shades
+    # optimized w/ orange
     for i, data in enumerate(optimized_data):
         color = optimized_colors[i % len(optimized_colors)]  # Cycle through colors if more than four datasets
         plt.plot(data['Time'], data['Stiffness (N/mm)'], label=f'{joint_name} Optimized {i+1}', color=color)
     
-    # Plot the average lines for initial and optimized groups
     if initial_data:
         avg_initial = pd.concat(initial_data).groupby('Time').mean()['Stiffness (N/mm)']
         plt.plot(avg_initial.index, avg_initial, label='Average Initial', linewidth=2, color='navy', linestyle='--')
@@ -123,9 +123,9 @@ def main():
 
         plot_stiffness(data_dict, joint_name)
 
-        # Print Young's modulus results
+        # young's modulus
         print("-------------------------------------------------------\n")
-        print("--= Young Modulus =-- \n")
+        print("--= Young's Modulus =-- \n")
         for label, (modulus, r_squared) in youngs_moduli.items():
             print(f"Young's Modulus for {label}: {modulus:.3f} MPa (R^2: {r_squared:.3f})")
         print("")
@@ -143,6 +143,7 @@ def main():
             improvement_type = "gain" if improvement > 0 else "loss"
             print(f"Improvement Percentage in Young's Modulus for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
 
+        # printing out maximum stiffness (overview)
         print("--= Maximum Stiffness Average =-- \n")
 
         if max_stiffness_initial:
@@ -152,12 +153,12 @@ def main():
             avg_max_stiff_optimized = np.mean(max_stiffness_optimized)
             print(f"Average Maximum Stiffness for Optimized tests in {joint_name}: {avg_max_stiff_optimized:.3f} N/mm \n")
 
-        # Calculate and print the improvement percentage based on maximum stiffness
         if max_stiffness_initial and max_stiffness_optimized:
             improvement = ((avg_max_stiff_optimized - avg_max_stiff_initial) / avg_max_stiff_initial) * 100
             improvement_type = "gain" if improvement > 0 else "loss"
             print(f"Improvement Percentage in Maximum Stiffness for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
 
+        # evaluating at edge cases
         print("--= Stiffness Differences at 30N and 60N =-- \n")
         if stiffness_30N_initial and stiffness_30N_optimized:
             avg_stiff_30N_initial = np.mean(list(stiffness_30N_initial.values()))
