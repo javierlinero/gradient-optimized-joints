@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.colors as mcolors
 import numpy as np
 import os
+import argparse
 from scipy.interpolate import interp1d
 
 # process each csv file outputted from instron
@@ -38,7 +39,7 @@ def calculate_youngs_modulus(data):
 
 
 def plot_stiffness(data_dict, joint_name):
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(10, 8))
     
     # picked out hex colors for blue & orange
     initial_colors = ['#3d5a80', '#98c1d9', '#e0fbfc', '#293241']
@@ -79,7 +80,26 @@ def plot_stiffness(data_dict, joint_name):
     plt.style.use('ggplot')
     plt.show()
 
-def main():
+def plot_force_displacement(data_dict, joint_name):
+    plt.figure(figsize=(10, 6))
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
+    for i, (label, data) in enumerate(data_dict.items()):
+        # Filtering data around 30N force
+        data_near_30N = data[np.isclose(data['Force'], 30, atol=0.5)]
+        
+        if not data_near_30N.empty:
+            plt.scatter(data_near_30N['Displacement'], data_near_30N['Force'], color=colors[i % len(colors)], label=label)
+    
+    plt.title(f'Force vs. Displacement at 30N for {joint_name}')
+    plt.xlabel('Displacement (mm)')
+    plt.ylabel('Force (N)')
+    plt.legend(loc='best')
+    plt.grid(True)
+    plt.show()
+
+
+def main(opt):
     base_dir = '../instron_data'
     joint_dirs = [d for d in os.listdir(base_dir) if d.endswith('.is_tens_Exports')]
 
@@ -122,69 +142,83 @@ def main():
                     stiffness_60N_optimized[label] = stiff_60N
 
         plot_stiffness(data_dict, joint_name)
+        #plot_force_displacement(data_dict, joint_name)
 
         # young's modulus
-        print("-------------------------------------------------------\n")
-        print("--= Young's Modulus =-- \n")
-        for label, (modulus, r_squared) in youngs_moduli.items():
-            print(f"Young's Modulus for {label}: {modulus:.3f} MPa (R^2: {r_squared:.3f})")
-        print("")
+        if opt.incl_youngs:
+            print("-------------------------------------------------------\n")
+            print("--= Young's Modulus =-- \n")
+            for label, (modulus, r_squared) in youngs_moduli.items():
+                print(f"Young's Modulus for {label}: {modulus:.3f} MPa (R^2: {r_squared:.3f})")
+            print("")
 
-        if youngs_moduli_initial:
-            avg_youngs_initial = np.mean(youngs_moduli_initial)
-            print(f"Average Young's Modulus for Initial tests in {joint_name}: {avg_youngs_initial:.3f} MPa")
-        
-        if youngs_moduli_optimized:
-            avg_youngs_optimized = np.mean(youngs_moduli_optimized)
-            print(f"Average Young's Modulus for Optimized tests in {joint_name}: {avg_youngs_optimized:.3f} MPa \n")
+            if youngs_moduli_initial:
+                avg_youngs_initial = np.mean(youngs_moduli_initial)
+                print(f"Average Young's Modulus for Initial tests in {joint_name}: {avg_youngs_initial:.3f} MPa")
+            
+            if youngs_moduli_optimized:
+                avg_youngs_optimized = np.mean(youngs_moduli_optimized)
+                print(f"Average Young's Modulus for Optimized tests in {joint_name}: {avg_youngs_optimized:.3f} MPa \n")
 
-        if youngs_moduli_initial and youngs_moduli_optimized:
-            improvement = ((avg_youngs_optimized - avg_youngs_initial) / avg_youngs_initial) * 100
-            improvement_type = "gain" if improvement > 0 else "loss"
-            print(f"Improvement Percentage in Young's Modulus for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
+            if youngs_moduli_initial and youngs_moduli_optimized:
+                improvement = ((avg_youngs_optimized - avg_youngs_initial) / avg_youngs_initial) * 100
+                improvement_type = "gain" if improvement > 0 else "loss"
+                print(f"Improvement Percentage in Young's Modulus for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
 
         # printing out maximum stiffness (overview)
-        print("--= Maximum Stiffness Average =-- \n")
+        if opt.incl_stiffness:
+            print("--= Maximum Stiffness Average =-- \n")
 
-        if max_stiffness_initial:
-            avg_max_stiff_initial = np.mean(max_stiffness_initial)
-            print(f"Average Maximum Stiffness for Initial tests in {joint_name}: {avg_max_stiff_initial:.3f} N/mm")
-        if max_stiffness_optimized:
-            avg_max_stiff_optimized = np.mean(max_stiffness_optimized)
-            print(f"Average Maximum Stiffness for Optimized tests in {joint_name}: {avg_max_stiff_optimized:.3f} N/mm \n")
+            if max_stiffness_initial:
+                avg_max_stiff_initial = np.mean(max_stiffness_initial)
+                print(f"Average Maximum Stiffness for Initial tests in {joint_name}: {avg_max_stiff_initial:.3f} N/mm")
+            if max_stiffness_optimized:
+                avg_max_stiff_optimized = np.mean(max_stiffness_optimized)
+                print(f"Average Maximum Stiffness for Optimized tests in {joint_name}: {avg_max_stiff_optimized:.3f} N/mm \n")
 
-        if max_stiffness_initial and max_stiffness_optimized:
-            improvement = ((avg_max_stiff_optimized - avg_max_stiff_initial) / avg_max_stiff_initial) * 100
-            improvement_type = "gain" if improvement > 0 else "loss"
-            print(f"Improvement Percentage in Maximum Stiffness for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
+            if max_stiffness_initial and max_stiffness_optimized:
+                improvement = ((avg_max_stiff_optimized - avg_max_stiff_initial) / avg_max_stiff_initial) * 100
+                improvement_type = "gain" if improvement > 0 else "loss"
+                print(f"Improvement Percentage in Maximum Stiffness for {joint_name}: {improvement:.3f}% ({improvement_type})\n")
 
-        # evaluating at edge cases
-        print("--= Stiffness Differences at 30N and 60N =-- \n")
-        if stiffness_30N_initial and stiffness_30N_optimized:
-            avg_stiff_30N_initial = np.mean(list(stiffness_30N_initial.values()))
-            avg_stiff_30N_optimized = np.mean(list(stiffness_30N_optimized.values()))
-            improvement_30N = ((avg_stiff_30N_optimized - avg_stiff_30N_initial) / avg_stiff_30N_initial) * 100
-            for label in sorted(stiffness_30N_initial.keys()):
-                print(f"Stiffness at 30N for {label} (Initial): {stiffness_30N_initial[label]:.3f} N/mm")
-            for label in sorted(stiffness_30N_optimized.keys()):
-                print(f"Stiffness at 30N for {label} (Optimized): {stiffness_30N_optimized[label]:.3f} N/mm")
-            print("")
-            print(f"Average Stiffness at 30N for Initial tests in {joint_name}: {avg_stiff_30N_initial:.3f} N/mm")
-            print(f"Average Stiffness at 30N for Optimized tests in {joint_name}: {avg_stiff_30N_optimized:.3f} N/mm\n")
-            print(f"Improvement Percentage at 30N for {joint_name}: {improvement_30N:.3f}% \n")
+            # evaluating at edge cases
+            print("--= Stiffness Differences at 30N and 60N =-- \n")
+            if stiffness_30N_initial and stiffness_30N_optimized:
+                avg_stiff_30N_initial = np.mean(list(stiffness_30N_initial.values()))
+                std_stiff_30N_initial = np.std(list(stiffness_30N_initial.values()))
+                avg_stiff_30N_optimized = np.mean(list(stiffness_30N_optimized.values()))
+                std_stiff_30N_optimized = np.std(list(stiffness_30N_optimized.values()))
+                improvement_30N = ((avg_stiff_30N_optimized - avg_stiff_30N_initial) / avg_stiff_30N_initial) * 100
+                for label in sorted(stiffness_30N_initial.keys()):
+                    print(f"Stiffness at 30N for {label} (Initial): {stiffness_30N_initial[label]:.3f} N/mm")
+                for label in sorted(stiffness_30N_optimized.keys()):
+                    print(f"Stiffness at 30N for {label} (Optimized): {stiffness_30N_optimized[label]:.3f} N/mm")
+                print("")
+                print(f"Average Stiffness at 30N for Initial tests in {joint_name}: {avg_stiff_30N_initial:.3f} N/mm ± {std_stiff_30N_initial:.3f}")
+                print(f"Average Stiffness at 30N for Optimized tests in {joint_name}: {avg_stiff_30N_optimized:.3f} N/mm ± {std_stiff_30N_optimized:.3f}\n")
 
-        if stiffness_60N_initial and stiffness_60N_optimized:
-            avg_stiff_60N_initial = np.mean(list(stiffness_60N_initial.values()))
-            avg_stiff_60N_optimized = np.mean(list(stiffness_60N_optimized.values()))
-            improvement_60N = ((avg_stiff_60N_optimized - avg_stiff_60N_initial) / avg_stiff_60N_initial) * 100
-            for label in sorted(stiffness_60N_initial.keys()):
-                print(f"Stiffness at 60N for {label} (Initial): {stiffness_60N_initial[label]:.3f} N/mm")
-            for label in sorted(stiffness_60N_optimized.keys()):
-                print(f"Stiffness at 60N for {label} (Optimized): {stiffness_60N_optimized[label]:.3f} N/mm")
-            print("")
-            print(f"Average Stiffness at 60N for Initial tests in {joint_name}: {avg_stiff_60N_initial:.3f} N/mm")
-            print(f"Average Stiffness at 60N for Optimized tests in {joint_name}: {avg_stiff_60N_optimized:.3f} N/mm\n")
-            print(f"Improvement Percentage at 60N for {joint_name}: {improvement_60N:.3f}% \n")
+                print(f"Improvement Percentage at 30N for {joint_name}: {improvement_30N:.3f}% \n")
+
+            if stiffness_60N_initial and stiffness_60N_optimized:
+                avg_stiff_60N_initial = np.mean(list(stiffness_60N_initial.values()))
+                std_stiff_60N_initial = np.std(list(stiffness_60N_initial.values()))
+                avg_stiff_60N_optimized = np.mean(list(stiffness_60N_optimized.values()))
+                std_stiff_60N_optimized = np.std(list(stiffness_60N_optimized.values()))
+                improvement_60N = ((avg_stiff_60N_optimized - avg_stiff_60N_initial) / avg_stiff_60N_initial) * 100
+                for label in sorted(stiffness_60N_initial.keys()):
+                    print(f"Stiffness at 60N for {label} (Initial): {stiffness_60N_initial[label]:.3f} N/mm")
+                for label in sorted(stiffness_60N_optimized.keys()):
+                    print(f"Stiffness at 60N for {label} (Optimized): {stiffness_60N_optimized[label]:.3f} N/mm")
+                print("")
+                print(f"Average Stiffness at 60N for Initial tests in {joint_name}: {avg_stiff_60N_initial:.3f} N/mm ± {std_stiff_60N_initial:.3f}")
+                print(f"Average Stiffness at 60N for Optimized tests in {joint_name}: {avg_stiff_60N_optimized:.3f} N/mm ± {std_stiff_60N_optimized:.3f}\n")
+                print(f"Improvement Percentage at 60N for {joint_name}: {improvement_60N:.3f}% \n")
 
 if __name__ == '__main__': 
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--incl_youngs', type=bool, default=False,
+                        help='include youngs modulus calculation')
+    parser.add_argument('--incl_stiffness', type=bool, default=True,
+                        help='include stiffness improvement calculation')
+    opt = parser.parse_args()
+    main(opt)
